@@ -1,15 +1,28 @@
 <main>
-    <section class-="login-section">
+    <section class="login-section">
         <img src="/assets/logo.svg" alt="Logo">
-        <h2></h2>
-        <button></button>
-        <div>
-            <samp>or</samp>
+        <h2>{{ title }}</h2>
+
+        <ng-content></ng-content>
+
+     
+        <button class="primary" (click)="onSubmitClick()"
+        [disabled]="isPrimaryButtonDisabled">
+            {{ primaryButtonText }}
+        </button>
+
+        <div class="or">
+            <span>or</span>
         </div>
-        <button></button>
-        <section class="main-section">
-            <h1>You should, Movelt</h1>
-            <img src="/assets/skate.svg" alt="Skateboard">
-        </section>
+
+      
+        <button class="secondary" (click)="onNavigateClick()">
+            {{ secondaryButtonText }}
+        </button>
+    </section>
+
+    <section class="main-section">
+        <h1>You should, Movelt!</h1>
+        <img src="/assets/skate.svg" alt="Skateboard">
     </section>
 </main>

@@ -1,0 +1,36 @@
+<app-default-login-layout 
+    title="Create your account"
+    primaryButtonText="Create account"
+    secondaryButtonText="Login now"
+    [isPrimaryButtonDisabled]="!signupForm.valid"
+    (submit)="onSubmit()"
+    (navigate)="onNavigate()">
+    
+    <form [formGroup]="signupForm">
+        <app-primaryinput
+            label="Name"
+            type="text"
+            placeholder="Seu nome"
+            formControlName="name">
+        </app-primaryinput>
+        <app-primaryinput
+            label="Email"
+            type="email"
+            placeholder="@gmail.com"
+            formControlName="email">
+        </app-primaryinput>
+
+        <app-primaryinput
+            label="Password"
+            type="password"
+            placeholder="Your password"
+            formControlName="password">
+        </app-primaryinput>
+        <app-primaryinput
+            label="Confirm password"
+            type="password"
+            placeholder="Confirm your password"
+            formControlName="passwordConfirmation">
+    </app-primaryinput>
+</form>
+</app-default-login-layout>
