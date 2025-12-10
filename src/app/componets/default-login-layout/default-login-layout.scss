@@ -1,0 +1,17 @@
+main {
+    display: flex;
+    flex-direction: row;
+    align-items: center;  
+    justify-content: center;
+
+    .main-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+
+
+        flex-grow: 1;
+    }
+}
