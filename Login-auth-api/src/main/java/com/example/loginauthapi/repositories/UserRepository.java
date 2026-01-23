@@ -1,12 +1,10 @@
-package com.example.Login_auth_api.domain.user;
+package com.example.loginauthapi.repositories;
 
+import com.example.loginauthapi.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
 public interface UserRepository extends JpaRepository<User, String> {
-    Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
 }

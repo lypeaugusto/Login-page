@@ -1,4 +1,4 @@
-package com.example.Login_auth_api.domain.user;
+package com.example.loginauthapi.domain.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,24 +16,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    private String username;
     private String name;
     private String email;
     private String password;
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 }
