@@ -1,9 +1,11 @@
 package com.example.Login_auth_api.AuthController;
 
 import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*") // Permite acesso de qualquer origem (ajuste para http://localhost:4200 em produção)
 public class Controllers {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -39,6 +42,17 @@ public class Controllers {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest body) {
+        // Validação: email, password e name são obrigatórios
+        if (body.getEmail() == null || body.getEmail().isEmpty()) {
+            return ResponseEntity.badRequest().body("Email é obrigatório");
+        }
+        if (body.getPassword() == null || body.getPassword().isEmpty()) {
+            return ResponseEntity.badRequest().body("Password é obrigatório");
+        }
+        if (body.getName() == null || body.getName().isEmpty()) {
+            return ResponseEntity.badRequest().body("Name é obrigatório");
+        }
+
         Optional<User> user = this.userRepository.findByEmail(body.getEmail());
 
         if (user.isPresent()) {
@@ -49,7 +63,7 @@ public class Controllers {
         newUser.setPassword(passwordEncoder.encode(body.getPassword()));
         newUser.setEmail(body.getEmail());
         newUser.setName(body.getName());
-        newUser.setUsername(body.getUsername());
+        newUser.setUsername(body.getEmail()); // Username = Email
         this.userRepository.save(newUser);
         String token = this.tokenService.gerarToken(newUser);
         return ResponseEntity.ok(new LoginResponse(token));

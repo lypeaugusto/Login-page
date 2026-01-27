@@ -41,15 +41,23 @@ export class SignupComponent {
   }
 
   // botão principal (cadastrar)
-  onSubmit() {
-    this.loginService.signup(this.signupForm.value.name, this.signupForm.value.email, this.signupForm.value.password).subscribe({
-      next: () => {
-        this.toastService.success("Register successful");
-        this.router.navigate(['/login']);
-      },
-      error: () => this.toastService.error("Register failed! Try again later.")
-    });
+onSubmit() {
+  if (this.signupForm.invalid) {
+    this.signupForm.markAllAsTouched();
+    return;
   }
+
+  const { name, email, password } = this.signupForm.value;
+
+  this.loginService.signup(name, email, password).subscribe({
+    next: () => {
+      this.toastService.success('Register successful');
+      this.router.navigate(['/login']);
+    },
+    error: () => this.toastService.error('Register failed! Try again later.')
+  });
+}
+
 
   // botão secundário (navigate)
   onNavigate() {

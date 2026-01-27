@@ -3,6 +3,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "java",
+      "name": "LoginAuthApiApplication",
+      "request": "launch",
+      "mainClass": "com.example.Login_auth_api.LoginAuthApiApplication",
+      "projectName": "Login-auth-api"
+    },
+    {
       "name": "ng serve",
       "type": "chrome",
       "request": "launch",
