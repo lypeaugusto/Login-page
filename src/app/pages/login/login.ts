@@ -41,7 +41,11 @@ export class LoginComponent {
   // botão principal (login)
   onSubmit() {
     this.loginService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe({
-      next: () => this.toastService.success("Login successful"),
+      next: (response) => {
+        this.toastService.success("Login successful");
+        localStorage.setItem("token", response.token);
+        this.router.navigate(['/user']);
+      },
       error: () => this.toastService.error("Login failed")
     });
   }

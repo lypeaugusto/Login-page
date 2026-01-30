@@ -3,25 +3,25 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface SignupResponse {
-    token: string;
+  token: string;
 }
 
 export interface LoginResponse {
-    token: string;
+  token: string;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class LoginService {
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient) { }
 
-  login(username: string, password: string): Observable<LoginResponse> {
-    return this.httpClient.post<LoginResponse>("/api/auth/login", { username, password });
+  login(email: string, password: string): Observable<LoginResponse> {
+    return this.httpClient.post<LoginResponse>("/api/auth/login", { email, password });
   }
 
   signup(name: string, email: string, password: string): Observable<SignupResponse> {
     return this.httpClient.post<SignupResponse>('/api/auth/register', { name, email, password });
   }
-  
+
 }

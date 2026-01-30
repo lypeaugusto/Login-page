@@ -13,6 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import org.springframework.security.config.Customizer;
 
 @Configuration
 @EnableWebSecurity
@@ -24,17 +27,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Desabilita CSRF (necessário para JWT/API REST)
-            .cors(cors -> cors.configurationSource(request -> null)) // CORS configurado em CorsConfig
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Define como Stateless (sem sessão de servidor)
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()    // Libera login
-                .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll() // Libera registro
-                .requestMatchers("/error").permitAll() // Libera endpoint de erro para evitar 403 mascarando 404
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Permite requisições OPTIONS (preflight CORS)
-                .anyRequest().authenticated() // Bloqueia o resto
-            )
-            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class); // Adiciona seu filtro de token
+                .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/auth/login")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/auth/register"))
+                        .permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/error")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.OPTIONS, "/**")).permitAll()
+                        .anyRequest().authenticated())
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -46,7 +51,8 @@ public class SecurityConfig {
 
     // Bean necessário para autenticação (padrão do Spring Security)
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 }

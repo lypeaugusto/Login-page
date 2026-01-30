@@ -26,12 +26,12 @@ public class TokenService {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
                     .withIssuer("auth0")
-                    .withSubject(user.getUsername())
+                    .withSubject(user.getEmail())
                     .withClaim("name", user.getName())
                     .withClaim("email", user.getEmail())
                     .withExpiresAt(dataExpiracao())
                     .sign(algorithm);
-        } catch (JWTCreationException exception){
+        } catch (JWTCreationException exception) {
             throw new RuntimeException("Erro ao gerar token JWT", exception);
         }
     }
@@ -48,7 +48,7 @@ public class TokenService {
             System.out.println("✓ Token válido. Subject: " + subject);
             System.out.println("  Claims: " + decodedJWT.getClaims());
             return subject;
-        } catch (JWTVerificationException exception){
+        } catch (JWTVerificationException exception) {
             System.out.println("✗ Erro ao validar token: " + exception.getMessage());
             exception.printStackTrace();
             return null;

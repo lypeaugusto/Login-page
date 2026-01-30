@@ -1,9 +1,6 @@
 package com.example.Login_auth_api.infra.security;
 
-import java.util.Collections;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,19 +20,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
-
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
-        );
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
     }
-    
-    public void registerUser(String username, String password, String email) {
+
+    public void registerUser(String name, String username, String password, String email) {
         User newUser = new User();
+        newUser.setName(name);
         newUser.setUsername(username);
         newUser.setPassword(passwordEncoder.encode(password));
         newUser.setEmail(email);

@@ -11,42 +11,49 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.Login_auth_api.domain.user.User;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
     private final TokenService tokenService;
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
 
-    public AuthController(TokenService tokenService, AuthenticationManager authenticationManager, CustomUserDetailsService userDetailsService) {
+    public AuthController(TokenService tokenService, AuthenticationManager authenticationManager,
+            CustomUserDetailsService userDetailsService) {
         this.tokenService = tokenService;
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginRequestDTO body){
-        var usernamePassword = new UsernamePasswordAuthenticationToken(body.username(), body.password());
+    public ResponseEntity login(@RequestBody LoginRequestDTO body) {
+        var usernamePassword = new UsernamePasswordAuthenticationToken(body.email(), body.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
         var token = tokenService.gerarToken((User) auth.getPrincipal());
-        return ResponseEntity.ok(new ResponseDTO(body.username(), token));
+        return ResponseEntity.ok(new ResponseDTO(((User) auth.getPrincipal()).getName(), token));
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody RegisterRequestDTO body){
+    public ResponseEntity register(@RequestBody RegisterRequestDTO body) {
         // O nome será usado como username
-        this.userDetailsService.registerUser(body.name(), body.password(), body.email());
-        
+        this.userDetailsService.registerUser(body.name(), body.name(), body.password(), body.email());
+
         // Gera um token para o usuário recém-criado para já logar automaticamente
         User newUser = new User();
+        newUser.setName(body.name());
         newUser.setUsername(body.name());
         newUser.setEmail(body.email());
         var token = this.tokenService.gerarToken(newUser);
-        
+
         return ResponseEntity.ok(new ResponseDTO(body.name(), token));
     }
-    
-    public record LoginRequestDTO (String username, String password) {}
-    public record RegisterRequestDTO (String name, String email, String password) {}
-    public record ResponseDTO (String name, String token) {}
+
+    public record LoginRequestDTO(String email, String password) {
+    }
+
+    public record RegisterRequestDTO(String name, String email, String password) {
+    }
+
+    public record ResponseDTO(String name, String token) {
+    }
 }
