@@ -1,13 +1,35 @@
 @use 'ngx-toastr/toastr';
 
-
-*{
-  margin: 0;
-  padding: 0;
+* {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
-    
-
 }
-html, body {
- height: 100%;
+
+html,
+body {
+    height: 100%;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+body.dark-mode {
+
+    .edit-card,
+    .user-card,
+    .todo-card {
+        background: rgba(45, 52, 54, 0.8) !important;
+        border-color: rgba(255, 255, 255, 0.05) !important;
+        color: white !important;
+    }
+
+    input {
+        background: rgba(0, 0, 0, 0.2) !important;
+        color: white !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
 }

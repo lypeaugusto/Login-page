@@ -15,7 +15,7 @@ import { ToastrService } from 'ngx-toastr';
     Primaryinput,
   ],
   templateUrl: './login.html',
-  styleUrls: ['./login.scss'],
+  styleUrl: './login.scss',
 })
 export class LoginComponent {
 

@@ -7,9 +7,9 @@ import { UserComponent } from './pages/user/user';
 
 
 export const routes: Routes = [
-    { 
+    {
         path: 'login',
-        component: LoginComponent 
+        component: LoginComponent
     },
     {
         path: 'signup',
@@ -19,6 +19,11 @@ export const routes: Routes = [
     {
         path: 'user',
         component: UserComponent,
-        canActivate: [AuthGuard]    
+        canActivate: [AuthGuard]
+    },
+    {
+        path: 'edit-user',
+        loadComponent: () => import('./pages/edit-user/edit-user').then(m => m.EditUser),
+        canActivate: [AuthGuard]
     }
 ];

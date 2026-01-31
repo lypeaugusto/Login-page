@@ -25,6 +25,10 @@ public class User implements UserDetails {
     private String name;
     private String email;
     private String password;
+    private String favoriteCity;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<com.example.Login_auth_api.domain.todo.Todo> todos;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

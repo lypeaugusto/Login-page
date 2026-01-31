@@ -5,9 +5,8 @@
 
         <ng-content></ng-content>
 
-     
-        <button class="primary" (click)="onSubmitClick()"
-        [disabled]="isPrimaryButtonDisabled">
+
+        <button class="primary" (click)="onSubmitClick()" [disabled]="isPrimaryButtonDisabled">
             {{ primaryButtonText }}
         </button>
 
@@ -15,7 +14,7 @@
             <span>or</span>
         </div>
 
-      
+
         <button class="secondary" (click)="onNavigateClick()">
             {{ secondaryButtonText }}
         </button>

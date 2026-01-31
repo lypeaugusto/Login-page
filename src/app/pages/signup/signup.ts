@@ -16,7 +16,7 @@ import { passwordValidator } from './password-validator';
     Primaryinput,
   ],
   templateUrl: './signup.html',
-  styleUrls: ['./signup.scss'],
+  styleUrl: './signup.scss',
   providers: [
     LoginService
   ]
@@ -41,22 +41,22 @@ export class SignupComponent {
   }
 
   // botão principal (cadastrar)
-onSubmit() {
-  if (this.signupForm.invalid) {
-    this.signupForm.markAllAsTouched();
-    return;
+  onSubmit() {
+    if (this.signupForm.invalid) {
+      this.signupForm.markAllAsTouched();
+      return;
+    }
+
+    const { name, email, password } = this.signupForm.value;
+
+    this.loginService.signup(name, email, password).subscribe({
+      next: () => {
+        this.toastService.success('Register successful');
+        this.router.navigate(['/login']);
+      },
+      error: () => this.toastService.error('Register failed! Try again later.')
+    });
   }
-
-  const { name, email, password } = this.signupForm.value;
-
-  this.loginService.signup(name, email, password).subscribe({
-    next: () => {
-      this.toastService.success('Register successful');
-      this.router.navigate(['/login']);
-    },
-    error: () => this.toastService.error('Register failed! Try again later.')
-  });
-}
 
 
   // botão secundário (navigate)

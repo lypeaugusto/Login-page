@@ -1,0 +1,45 @@
+<div class="edit-container" [class.dark-mode]="themeService.darkMode()">
+    <div class="edit-card">
+        <header class="edit-header">
+            <button class="btn-back" (click)="cancel()">← Voltar</button>
+            <h1>Editar Perfil</h1>
+        </header>
+
+        <div class="loading-state" *ngIf="isLoading">
+            <p>Carregando dados...</p>
+        </div>
+
+        <!-- Foto de Perfil (Preview) -->
+        <div class="profile-pic-section" *ngIf="!isLoading">
+            <div class="avatar-preview">
+                <span>👤</span>
+            </div>
+            <button class="btn-change-pic">Escolher Foto</button>
+            <p class="pic-hint">Funcionalidade de upload em breve!</p>
+        </div>
+
+        <form (ngSubmit)="onSubmit()" #editForm="ngForm" *ngIf="!isLoading">
+            <div class="form-group">
+                <label for="name">Nome Completo</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">👤</span>
+                    <input type="text" id="name" name="name" [(ngModel)]="name" required placeholder="Seu nome">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">✉️</span>
+                    <input type="email" id="email" name="email" [(ngModel)]="email" required email
+                        placeholder="seu@email.com">
+                </div>
+            </div>
+
+            <div class="actions">
+                <button type="button" class="btn-cancel" (click)="cancel()">Cancelar</button>
+                <button type="submit" class="btn-save" [disabled]="!editForm.form.valid">Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>

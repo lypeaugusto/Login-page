@@ -9,7 +9,7 @@ type InputType = 'text' | 'password' | 'email' | 'number';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './primaryinput.html',
-  styleUrls: ['./primaryinput.scss'],
+  styleUrl: './primaryinput.scss',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -25,8 +25,8 @@ export class Primaryinput implements ControlValueAccessor {
 
   value: string = '';
 
-  onChange = (value: string) => {};
-  onTouched = () => {};
+  onChange = (value: string) => { };
+  onTouched = () => { };
 
   writeValue(value: any): void {
     this.value = value;
@@ -47,6 +47,6 @@ export class Primaryinput implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    
+
   }
 }
