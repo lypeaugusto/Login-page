@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: meu-projeto-frontend
+    buildCommand: npm install && npm run build -- --configuration production
+    staticPublishPath: dist/meu-projeto/browser
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
