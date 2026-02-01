@@ -699,6 +699,10 @@ export class UserComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    if (!localStorage.getItem('token')) {
+      this.router.navigate(['/login']);
+      return;
+    }
     this.loadUserProfile();
   }
 
