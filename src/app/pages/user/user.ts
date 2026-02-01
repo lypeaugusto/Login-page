@@ -720,6 +720,9 @@ export class UserComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Erro ao carregar perfil:', err);
+        if (err.status === 403 || err.status === 401) {
+          this.logout();
+        }
         this.loadFavoriteWeather('Sao Paulo');
       }
     });
