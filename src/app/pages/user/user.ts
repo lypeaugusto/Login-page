@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { WeatherService } from '../../services/weather.service';
 import { UserService, Todo } from '../../services/user.service';
 import { ThemeService } from '../../services/theme.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-user',
@@ -30,7 +31,7 @@ import { ThemeService } from '../../services/theme.service';
         <div class="top-section">
           <div class="user-card">
             <div class="user-avatar">
-              <img *ngIf="userPicture" [src]="'http://localhost:8080' + userPicture" alt="Avatar" class="avatar-img">
+              <img *ngIf="userPicture" [src]="apiUrl + userPicture" alt="Avatar" class="avatar-img">
               <span *ngIf="!userPicture" class="avatar-icon">👤</span>
             </div>
             <div class="user-info">
@@ -757,6 +758,7 @@ export class UserComponent implements OnInit {
   editingTodoId: number | null = null;
   editingTodoText: string = '';
   editingTodoDueDate: string = '';
+  apiUrl = environment.apiUrl;
 
   constructor(
     private router: Router,
