@@ -12,10 +12,12 @@
         <!-- Foto de Perfil (Preview) -->
         <div class="profile-pic-section" *ngIf="!isLoading">
             <div class="avatar-preview">
-                <span>👤</span>
+                <img *ngIf="pictureUrl" [src]="'http://localhost:8080' + pictureUrl" alt="Preview">
+                <span *ngIf="!pictureUrl">👤</span>
             </div>
-            <button class="btn-change-pic">Escolher Foto</button>
-            <p class="pic-hint">Funcionalidade de upload em breve!</p>
+            <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none" accept="image/*">
+            <button type="button" class="btn-change-pic" (click)="fileInput.click()">Escolher Foto</button>
+            <p class="pic-hint">Clique para carregar uma nova foto</p>
         </div>
 
         <form (ngSubmit)="onSubmit()" #editForm="ngForm" *ngIf="!isLoading">

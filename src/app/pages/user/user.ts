@@ -30,7 +30,8 @@ import { ThemeService } from '../../services/theme.service';
         <div class="top-section">
           <div class="user-card">
             <div class="user-avatar">
-              <span class="avatar-icon">👤</span>
+              <img *ngIf="userPicture" [src]="'http://localhost:8080' + userPicture" alt="Avatar" class="avatar-img">
+              <span *ngIf="!userPicture" class="avatar-icon">👤</span>
             </div>
             <div class="user-info">
               <h2>Olá, {{ userName }}!</h2>
@@ -102,19 +103,57 @@ import { ThemeService } from '../../services/theme.service';
                 placeholder="O que você precisa fazer?"
                 class="todo-input"
               >
+              <input 
+                type="datetime-local" 
+                [(ngModel)]="newTodoDueDate" 
+                class="todo-date-input"
+                title="Data e hora do prazo"
+              >
               <button (click)="addTodo()" class="btn-add">Adicionar</button>
             </div>
 
             <div class="todo-list">
               @for (todo of todos; track todo.id) {
-                <div class="todo-item" [class.completed]="todo.completed">
-                  <div class="todo-content" (click)="toggleTodo(todo)">
-                    <div class="checkbox">
-                      @if (todo.completed) { <span>✓</span> }
+                <div class="todo-item" [class.completed]="todo.completed" [class.overdue]="isOverdue(todo)" [class.editing]="editingTodoId === todo.id">
+                  @if (editingTodoId === todo.id) {
+                    <!-- Modo de edição -->
+                    <div class="todo-edit-mode">
+                      <input 
+                        type="text" 
+                        [(ngModel)]="editingTodoText" 
+                        class="edit-input"
+                        placeholder="Texto do afazer"
+                      >
+                      <input 
+                        type="datetime-local" 
+                        [(ngModel)]="editingTodoDueDate" 
+                        class="edit-date-input"
+                      >
+                      <div class="edit-actions">
+                        <button (click)="saveEditTodo(todo)" class="btn-save">💾</button>
+                        <button (click)="cancelEdit()" class="btn-cancel">✖️</button>
+                      </div>
                     </div>
-                    <span class="todo-text">{{ todo.text }}</span>
-                  </div>
-                  <button (click)="removeTodo(todo.id!)" class="btn-remove">🗑️</button>
+                  } @else {
+                    <!-- Modo normal -->
+                    <div class="todo-content" (click)="toggleTodo(todo)">
+                      <div class="checkbox">
+                        @if (todo.completed) { <span>✓</span> }
+                      </div>
+                      <div class="todo-info">
+                        <span class="todo-text">{{ todo.text }}</span>
+                        @if (todo.dueDate) {
+                          <span class="todo-due-date" [class.overdue-text]="isOverdue(todo)">
+                            📅 {{ formatDueDate(todo.dueDate) }}
+                          </span>
+                        }
+                      </div>
+                    </div>
+                    <div class="todo-actions">
+                      <button (click)="startEditTodo(todo)" class="btn-edit" title="Editar">✏️</button>
+                      <button (click)="removeTodo(todo.id!)" class="btn-remove" title="Remover">🗑️</button>
+                    </div>
+                  }
                 </div>
               } @empty {
                 <div class="empty-state">
@@ -235,6 +274,13 @@ import { ThemeService } from '../../services/theme.service';
       align-items: center;
       justify-content: center;
       font-size: 2.2rem;
+      overflow: hidden;
+    }
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .user-info p { margin: 0.2rem 0 0; color: #636e72; }
@@ -406,6 +452,27 @@ import { ThemeService } from '../../services/theme.service';
       color: white;
     }
 
+    .todo-date-input {
+      padding: 1rem;
+      border-radius: 12px;
+      border: 2px solid #dfe6e9;
+      background: white;
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .todo-date-input:focus {
+      border-color: #a259ff;
+    }
+
+    .dark-mode .todo-date-input {
+      background: #353b48;
+      border-color: #4b4b4b;
+      color: white;
+    }
+
     /* City Search Styles */
     .city-search {
       display: flex;
@@ -531,6 +598,33 @@ import { ThemeService } from '../../services/theme.service';
       flex: 1;
     }
 
+    .todo-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      flex: 1;
+    }
+
+    .todo-due-date {
+      font-size: 0.75rem;
+      color: #636e72;
+      font-weight: 500;
+    }
+
+    .dark-mode .todo-due-date {
+      color: #b2bec3;
+    }
+
+    .overdue-text {
+      color: #ff7675 !important;
+      font-weight: 700;
+    }
+
+    .todo-item.overdue {
+      border-left: 3px solid #ff7675;
+      background: rgba(255, 118, 117, 0.05);
+    }
+
     .checkbox {
       width: 24px;
       height: 24px;
@@ -558,6 +652,90 @@ import { ThemeService } from '../../services/theme.service';
 
     .btn-remove:hover { opacity: 1; transform: scale(1.1); }
 
+    .todo-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .btn-edit {
+      background: none;
+      border: none;
+      font-size: 1.1rem;
+      cursor: pointer;
+      opacity: 0.3;
+      transition: all 0.3s ease;
+    }
+
+    .btn-edit:hover { opacity: 1; transform: scale(1.1); }
+
+    .todo-item.editing {
+      background: rgba(160, 89, 255, 0.05);
+      border-left: 3px solid #a259ff;
+    }
+
+    .todo-edit-mode {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      width: 100%;
+      padding: 0.5rem;
+    }
+
+    .edit-input {
+      flex: 2;
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 2px solid #dfe6e9;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .edit-input:focus {
+      border-color: #a259ff;
+    }
+
+    .dark-mode .edit-input {
+      background: #353b48;
+      border-color: #4b4b4b;
+      color: white;
+    }
+
+    .edit-date-input {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 2px solid #dfe6e9;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .edit-date-input:focus {
+      border-color: #a259ff;
+    }
+
+    .dark-mode .edit-date-input {
+      background: #353b48;
+      border-color: #4b4b4b;
+      color: white;
+    }
+
+    .edit-actions {
+      display: flex;
+      gap: 0.3rem;
+    }
+
+    .btn-save, .btn-cancel {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-save:hover { transform: scale(1.2); }
+    .btn-cancel:hover { transform: scale(1.2); }
+
     .empty-state {
       text-align: center;
       padding: 3rem;
@@ -574,6 +752,11 @@ export class UserComponent implements OnInit {
   favoriteCities: string[] = [];
   favoriteCitiesWeather: any[] = [];
   userName = 'Usuário';
+  userPicture: string | null = null;
+  newTodoDueDate: string = '';
+  editingTodoId: number | null = null;
+  editingTodoText: string = '';
+  editingTodoDueDate: string = '';
 
   constructor(
     private router: Router,
@@ -590,6 +773,7 @@ export class UserComponent implements OnInit {
     this.userService.getUserProfile().subscribe({
       next: (profile: any) => {
         this.userName = profile.name;
+        this.userPicture = profile.picture;
         this.todos = profile.todos || [];
 
         if (profile.favoriteCity) {
@@ -615,16 +799,75 @@ export class UserComponent implements OnInit {
 
     const newTodo: Todo = {
       text: this.newTodoText,
-      completed: false
+      completed: false,
+      dueDate: this.newTodoDueDate || undefined
     };
+
+    console.log('Enviando todo:', newTodo);
 
     this.userService.addTodo(newTodo).subscribe({
       next: (savedTodo: Todo) => {
+        console.log('Todo recebido do backend:', savedTodo);
         this.todos.unshift(savedTodo);
         this.newTodoText = '';
+        this.newTodoDueDate = '';
       },
       error: (err: any) => console.error('Erro ao adicionar todo:', err)
     });
+  }
+
+  formatDueDate(dueDate: string): string {
+    const date = new Date(dueDate);
+    const now = new Date();
+    const diff = date.getTime() - now.getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+    if (diff < 0) {
+      return 'Atrasado!';
+    } else if (days === 0 && hours < 24) {
+      return `Hoje às ${date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+    } else if (days === 1) {
+      return `Amanhã às ${date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+    } else {
+      return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    }
+  }
+
+  isOverdue(todo: Todo): boolean {
+    if (!todo.dueDate || todo.completed) return false;
+    return new Date(todo.dueDate) < new Date();
+  }
+
+  startEditTodo(todo: Todo) {
+    this.editingTodoId = todo.id!;
+    this.editingTodoText = todo.text;
+    this.editingTodoDueDate = todo.dueDate || '';
+  }
+
+  saveEditTodo(todo: Todo) {
+    const updatedTodo: Todo = {
+      ...todo,
+      text: this.editingTodoText,
+      dueDate: this.editingTodoDueDate || undefined
+    };
+
+    this.userService.updateTodo(updatedTodo).subscribe({
+      next: (saved: Todo) => {
+        const index = this.todos.findIndex(t => t.id === todo.id);
+        if (index !== -1) {
+          this.todos[index] = saved;
+        }
+        this.cancelEdit();
+      },
+      error: (err: any) => console.error('Erro ao atualizar todo:', err)
+    });
+  }
+
+  cancelEdit() {
+    this.editingTodoId = null;
+    this.editingTodoText = '';
+    this.editingTodoDueDate = '';
   }
 
   toggleTodo(todo: Todo) {

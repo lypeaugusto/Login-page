@@ -26,6 +26,7 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private String favoriteCity;
+    private String picture;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<com.example.Login_auth_api.domain.todo.Todo> todos;

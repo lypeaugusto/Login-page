@@ -6,12 +6,14 @@ export interface Todo {
     id?: number;
     text: string;
     completed: boolean;
+    dueDate?: string;
 }
 
 export interface UserProfile {
     name: string;
     email: string;
     favoriteCity: string;
+    picture?: string;
     todos: Todo[];
 }
 
@@ -54,5 +56,15 @@ export class UserService {
 
     updateProfile(name: string, email: string): Observable<any> {
         return this.http.put(`${this.apiUrl}/update`, { name, email }, { headers: this.getHeaders() });
+    }
+
+    uploadPicture(file: File): Observable<string> {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // Let Angular handle Content-Type for FormData
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+
+        return this.http.post(`${this.apiUrl}/upload`, formData, { headers, responseType: 'text' });
     }
 }

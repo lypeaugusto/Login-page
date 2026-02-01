@@ -27,7 +27,8 @@ public class UserController {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<Todo> todos = todoRepository.findByUserId(user.getId());
         return ResponseEntity
-                .ok(new UserProfileDTO(user.getName(), user.getEmail(), user.getFavoriteCity(), todos));
+                .ok(new UserProfileDTO(user.getName(), user.getEmail(), user.getFavoriteCity(), user.getPicture(),
+                        todos));
     }
 
     @PostMapping("/city")
@@ -75,6 +76,7 @@ public class UserController {
             Todo todo = todoOpt.get();
             todo.setCompleted(todoDetails.isCompleted());
             todo.setText(todoDetails.getText());
+            todo.setDueDate(todoDetails.getDueDate());
             return ResponseEntity.ok(todoRepository.save(todo));
         }
         return ResponseEntity.notFound().build();
@@ -86,6 +88,26 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    public record UserProfileDTO(String name, String email, String favoriteCity, List<Todo> todos) {
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadPicture(
+            @RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        try {
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            java.nio.file.Path path = java.nio.file.Paths.get("uploads", fileName);
+            java.nio.file.Files.createDirectories(path.getParent());
+            java.nio.file.Files.copy(file.getInputStream(), path, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+            user.setPicture("/uploads/" + fileName);
+            userRepository.save(user);
+
+            return ResponseEntity.ok("/uploads/" + fileName);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    public record UserProfileDTO(String name, String email, String favoriteCity, String picture, List<Todo> todos) {
     }
 }
