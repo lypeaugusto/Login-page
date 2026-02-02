@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { WeatherService } from '../../services/weather.service';
 import { UserService, Todo } from '../../services/user.service';
 import { ThemeService } from '../../services/theme.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-user',
@@ -30,7 +31,7 @@ import { ThemeService } from '../../services/theme.service';
         <div class="top-section">
           <div class="user-card">
             <div class="user-avatar">
-              <img *ngIf="userPicture" [src]="'http://localhost:8080' + userPicture" alt="Avatar" class="avatar-img">
+              <img *ngIf="userPicture" [src]="apiUrl + userPicture" alt="Avatar" class="avatar-img">
               <span *ngIf="!userPicture" class="avatar-icon">👤</span>
             </div>
             <div class="user-info">
@@ -169,14 +170,14 @@ import { ThemeService } from '../../services/theme.service';
   styles: [`
     .dashboard-container {
       min-height: 100vh;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
       padding: 2rem;
       font-family: 'Inter', sans-serif;
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .dashboard-container.dark-mode {
-      background: linear-gradient(135deg, #1e272e 0%, #0f1416 100%);
+      background: linear-gradient(135deg, #1e272e, #0f1416);
     }
 
     .dashboard-header {
@@ -247,19 +248,22 @@ import { ThemeService } from '../../services/theme.service';
       }
     }
 
-    .user-card {
+    .user-card, .todo-card {
       background: rgba(255, 255, 255, 0.9);
       backdrop-filter: blur(20px);
       padding: 2rem;
       border-radius: 24px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.05);
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
       border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
-    .dark-mode .user-card {
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .dark-mode .user-card, .dark-mode .todo-card {
       background: rgba(45, 52, 54, 0.8);
       border-color: rgba(255, 255, 255, 0.05);
       color: white;
@@ -268,7 +272,7 @@ import { ThemeService } from '../../services/theme.service';
     .user-avatar {
       width: 70px;
       height: 70px;
-      background: linear-gradient(135deg, #a259ff 0%, #7001FD 100%);
+      background: linear-gradient(135deg, #a259ff, #7001FD);
       border-radius: 18px;
       display: flex;
       align-items: center;
@@ -317,7 +321,6 @@ import { ThemeService } from '../../services/theme.service';
       background: rgba(255, 255, 255, 0.2);
     }
 
-    /* Weather Card Styles */
     .favorite-cities-list {
       display: flex;
       flex-direction: column;
@@ -327,7 +330,7 @@ import { ThemeService } from '../../services/theme.service';
 
     .weather-card {
       position: relative;
-      background: linear-gradient(135deg, #7001FD 0%, #a259ff 100%);
+      background: linear-gradient(135deg, #7001FD, #a259ff);
       padding: 1.2rem 1.5rem;
       border-radius: 20px;
       color: white;
@@ -340,11 +343,11 @@ import { ThemeService } from '../../services/theme.service';
     }
 
     .dark-mode .weather-card {
-      background: linear-gradient(135deg, #1e272e 0%, #2d3436 100%);
+      background: linear-gradient(135deg, #1e272e, #2d3436);
     }
 
     .preview-card {
-      background: linear-gradient(135deg, #10ac84 0%, #1dd1a1 100%);
+      background: linear-gradient(135deg, #10ac84, #1dd1a1);
       margin-top: 1rem;
       border-style: dashed;
     }
@@ -401,23 +404,7 @@ import { ThemeService } from '../../services/theme.service';
 
     .btn-remove-fav:hover { opacity: 1; transform: scale(1.2); }
 
-    /* Todo Styles */
     .todo-section { width: 100%; }
-
-    .todo-card {
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(20px);
-      padding: 2rem;
-      border-radius: 24px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.05);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .dark-mode .todo-card {
-      background: rgba(45, 52, 54, 0.8);
-      border-color: rgba(255, 255, 255, 0.05);
-      color: white;
-    }
 
     .todo-header {
       display: flex;
@@ -435,45 +422,27 @@ import { ThemeService } from '../../services/theme.service';
       margin-bottom: 2rem;
     }
 
-    .todo-input {
-      flex: 1;
+    .todo-input, .todo-date-input {
       padding: 1rem;
       border-radius: 12px;
       border: 2px solid #dfe6e9;
       background: white;
-      font-size: 1rem;
       outline: none;
       transition: all 0.3s ease;
     }
+    .todo-input { flex: 1; font-size: 1rem; }
+    .todo-date-input { font-size: 0.9rem; cursor: pointer; }
 
-    .dark-mode .todo-input {
+    .dark-mode .todo-input, .dark-mode .todo-date-input {
       background: #353b48;
       border-color: #4b4b4b;
       color: white;
     }
 
-    .todo-date-input {
-      padding: 1rem;
-      border-radius: 12px;
-      border: 2px solid #dfe6e9;
-      background: white;
-      font-size: 0.9rem;
-      outline: none;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
-    .todo-date-input:focus {
+    .todo-input:focus, .todo-date-input:focus, .edit-input:focus, .edit-date-input:focus {
       border-color: #a259ff;
     }
 
-    .dark-mode .todo-date-input {
-      background: #353b48;
-      border-color: #4b4b4b;
-      color: white;
-    }
-
-    /* City Search Styles */
     .city-search {
       display: flex;
       gap: 0.5rem;
@@ -547,8 +516,6 @@ import { ThemeService } from '../../services/theme.service';
       border-color: #00b894;
       transform: translateY(-2px);
     }
-
-    /* Todo Styles */.todo-input:focus { border-color: #a259ff; }
 
     .btn-add {
       padding: 0 1.5rem;
@@ -641,33 +608,22 @@ import { ThemeService } from '../../services/theme.service';
     .completed .checkbox { border-color: #00b894; background: #55efc4; color: white; }
     .completed .todo-text { text-decoration: line-through; color: #b2bec3; }
 
-    .btn-remove {
+    .btn-remove, .btn-edit {
       background: none;
       border: none;
-      font-size: 1.2rem;
       cursor: pointer;
       opacity: 0.3;
       transition: all 0.3s ease;
     }
-
-    .btn-remove:hover { opacity: 1; transform: scale(1.1); }
+    .btn-remove { font-size: 1.2rem; }
+    .btn-edit { font-size: 1.1rem; }
+    .btn-remove:hover, .btn-edit:hover { opacity: 1; transform: scale(1.1); }
 
     .todo-actions {
       display: flex;
       gap: 0.5rem;
       align-items: center;
     }
-
-    .btn-edit {
-      background: none;
-      border: none;
-      font-size: 1.1rem;
-      cursor: pointer;
-      opacity: 0.3;
-      transition: all 0.3s ease;
-    }
-
-    .btn-edit:hover { opacity: 1; transform: scale(1.1); }
 
     .todo-item.editing {
       background: rgba(160, 89, 255, 0.05);
@@ -682,39 +638,16 @@ import { ThemeService } from '../../services/theme.service';
       padding: 0.5rem;
     }
 
-    .edit-input {
-      flex: 2;
+    .edit-input, .edit-date-input {
       padding: 0.5rem;
       border-radius: 8px;
       border: 2px solid #dfe6e9;
-      font-size: 0.9rem;
       outline: none;
     }
+    .edit-input { flex: 2; font-size: 0.9rem; }
+    .edit-date-input { flex: 1; font-size: 0.85rem; }
 
-    .edit-input:focus {
-      border-color: #a259ff;
-    }
-
-    .dark-mode .edit-input {
-      background: #353b48;
-      border-color: #4b4b4b;
-      color: white;
-    }
-
-    .edit-date-input {
-      flex: 1;
-      padding: 0.5rem;
-      border-radius: 8px;
-      border: 2px solid #dfe6e9;
-      font-size: 0.85rem;
-      outline: none;
-    }
-
-    .edit-date-input:focus {
-      border-color: #a259ff;
-    }
-
-    .dark-mode .edit-date-input {
+    .dark-mode .edit-input, .dark-mode .edit-date-input {
       background: #353b48;
       border-color: #4b4b4b;
       color: white;
@@ -733,8 +666,7 @@ import { ThemeService } from '../../services/theme.service';
       transition: all 0.3s ease;
     }
 
-    .btn-save:hover { transform: scale(1.2); }
-    .btn-cancel:hover { transform: scale(1.2); }
+    .btn-save:hover, .btn-cancel:hover { transform: scale(1.2); }
 
     .empty-state {
       text-align: center;
@@ -757,6 +689,7 @@ export class UserComponent implements OnInit {
   editingTodoId: number | null = null;
   editingTodoText: string = '';
   editingTodoDueDate: string = '';
+  apiUrl = environment.apiUrl;
 
   constructor(
     private router: Router,
@@ -766,6 +699,10 @@ export class UserComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    if (!localStorage.getItem('token')) {
+      this.router.navigate(['/login']);
+      return;
+    }
     this.loadUserProfile();
   }
 
@@ -787,6 +724,9 @@ export class UserComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Erro ao carregar perfil:', err);
+        if (err.status === 403 || err.status === 401) {
+          this.logout();
+        }
         this.loadFavoriteWeather('Sao Paulo');
       }
     });

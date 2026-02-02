@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Todo {
     id?: number;
@@ -21,7 +22,7 @@ export interface UserProfile {
     providedIn: 'root'
 })
 export class UserService {
-    private apiUrl = '/api/user';
+    private apiUrl = `${environment.apiUrl}/user`;
 
     constructor(private http: HttpClient) { }
 
