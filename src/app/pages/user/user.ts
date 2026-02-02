@@ -803,11 +803,8 @@ export class UserComponent implements OnInit {
       dueDate: this.newTodoDueDate || undefined
     };
 
-    console.log('Enviando todo:', newTodo);
-
     this.userService.addTodo(newTodo).subscribe({
       next: (savedTodo: Todo) => {
-        console.log('Todo recebido do backend:', savedTodo);
         this.todos.unshift(savedTodo);
         this.newTodoText = '';
         this.newTodoDueDate = '';
