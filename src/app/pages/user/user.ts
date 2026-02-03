@@ -447,6 +447,7 @@ import { environment } from '../../../environments/environment';
       display: flex;
       gap: 0.5rem;
       margin-bottom: 1rem;
+      margin-top: 1rem;
     }
 
     .search-input {
@@ -802,7 +803,7 @@ export class UserComponent implements OnInit {
   }
 
   cancelEdit() {
-    this.editingTodoId = null;
+      this.editingTodoId = null;
     this.editingTodoText = '';
     this.editingTodoDueDate = '';
   }

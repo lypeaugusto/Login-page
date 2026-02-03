@@ -18,6 +18,7 @@ main {
         align-items: stretch;
         justify-content: center;
         transition: background 0.3s, color 0.3s;
+        color: $text-color;
 
         img[alt="Logo"] {
             width: 120px;
@@ -80,16 +81,31 @@ main {
         }
     }
 
-    .dark-mode .login-section {
-        background: #1e1e1e;
-        color: white;
 
-        h2 {
-            color: white;
+
+    .main-section {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        background-color: $background-color;
+        padding: 40px;
+        transition: background 0.3s;
+
+        h1 {
+            margin: 0;
+            font-size: 20px;
+            color: #222;
+            font-weight: 700;
         }
 
-        .or {
-            color: #aaa;
+        img[alt="Skateboard"] {
+            width: 480px;
+            max-width: 60%;
+            height: auto;
+            display: block;
         }
     }
 
@@ -118,12 +134,22 @@ main {
             display: block;
         }
     }
+}
 
-    .dark-mode .main-section {
-        background-color: #121212;
+// Override global dark mode input styles 
+:host-context(body.dark-mode) {
+    ::ng-deep input {
+        background-color: #f9f9f9 !important;
+        color: #000 !important;
+        border-color: #e0e0e0 !important;
 
-        h1 {
-            color: white;
+        &:focus {
+            background-color: #ffffff !important;
+            border-color: $primary-color !important;
+        }
+
+        &::placeholder {
+            color: #b0b0b0 !important;
         }
     }
 }
